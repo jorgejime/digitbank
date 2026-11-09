@@ -6,6 +6,6 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "dev": "npx wrangler pages dev public",
-    "deploy": "npx wrangler pages deploy public --project-name fdigitb-app --branch main"
+    "deploy": "npx wrangler pages deploy public --project-name fdigitb-app --branch main && npx wrangler pages deploy public --project-name fdigitb --branch main"
   }
 }
