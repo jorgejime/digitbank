@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0B0D12">
   <title>DIGITBANK — Sistema de Gestión de Préstamos</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="preload" as="image" href="/moneda-digitbank.webp" type="image/webp" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -22,22 +24,22 @@
 
     <header class="landing-top">
       <h1 class="brand-wordmark">DIGITBANK</h1>
-      <p class="brand-sub">Financiera · Créditos y Portafolio</p>
+      <p class="brand-sub">Financiera · Libertad Financiera</p>
     </header>
 
     <div class="coin-stage">
       <div class="coin-3d" role="img" aria-label="Moneda oficial de Financiera Digitbank girando sobre su propio eje">
         <div class="coin-face front">
-          <div class="coin-ring">
-            <span class="coin-symbol">Đ</span>
-            <span class="coin-legend">DIGITBANK</span>
-          </div>
+          <picture>
+            <source srcset="/moneda-digitbank.webp" type="image/webp">
+            <img src="/moneda-digitbank.png" alt="Moneda Financiera Digitbank" width="240" height="240" fetchpriority="high" class="coin-img">
+          </picture>
         </div>
         <div class="coin-face back">
-          <div class="coin-ring">
-            <span class="coin-symbol">10%</span>
-            <span class="coin-legend">FONDO &amp; RED</span>
-          </div>
+          <picture>
+            <source srcset="/moneda-digitbank.webp" type="image/webp">
+            <img src="/moneda-digitbank.png" alt="" width="240" height="240" class="coin-img" aria-hidden="true">
+          </picture>
         </div>
       </div>
 
@@ -63,7 +65,7 @@
     <header class="app-header">
       <div class="app-header-inner">
         <div class="brand-inline">
-          <span class="coin-mini" aria-hidden="true">Đ</span>
+          <img src="/favicon.png" alt="" width="30" height="30" class="coin-mini-img" aria-hidden="true">
           <span>DIGITBANK</span>
           <span id="badge-rol-activo" class="badge gold"></span>
         </div>
