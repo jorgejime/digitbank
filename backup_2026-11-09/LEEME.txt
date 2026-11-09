@@ -1,0 +1,1 @@
+Respaldo previo al borrado (2026-11-09). Datos de prueba de sistema-creditos-db: clientes(3: Ana Prueba, Bruno Referido, Prueba Motor), creditos(3), pagos(6), cuotas(ver cuotas.json). SPA anterior: app-spa-anterior.html

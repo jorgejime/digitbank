@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5F4F0">
+<title>fdigitb — Sistema de Creditos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F4F0; --surface:#FFFFFF; --sand:#ECEAE2; --line:#E4E1D6;
+    --ink:#1D1F1C; --muted:#74776B; --pine:#2E4B3F; --pine-soft:#E0E9E1;
+    --clay:#B0512B; --clay-soft:#F7E7DC; --ok:#2F7D4F; --ok-soft:#E2F0E5;
+    --r-lg:22px; --r-md:16px; --r-sm:12px;
+    --shadow:0 1px 2px rgba(29,31,28,.04),0 8px 24px rgba(29,31,28,.05);
+  }
+  *{box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.45;padding-bottom:86px}
+  @media(min-width:860px){body{padding-bottom:0}}
+  /* ---------- login ---------- */
+  #vista-login{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 18px}
+  .login-box{width:100%;max-width:400px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:38px;height:38px;border-radius:12px;background:var(--pine);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px}
+  .brand .name{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .login-card{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:26px 22px;box-shadow:var(--shadow);margin-top:22px}
+  .login-card h1{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+  /* ---------- app shell ---------- */
+  header{position:sticky;top:0;z-index:20;background:rgba(245,244,240,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar{max-width:1140px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+  .bar .brand .name{font-size:19px}
+  .bar .logo{width:32px;height:32px;border-radius:10px;font-size:16px}
+  .btn{appearance:none;border:none;cursor:pointer;background:var(--pine);color:#fff;font-weight:600;font-size:14.5px;padding:12px 20px;border-radius:999px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .06s ease,opacity .15s}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);min-height:40px;padding:8px 16px}
+  .btn.block{width:100%}
+  .btn.sm{min-height:40px;padding:8px 16px}
+  /* nav: barra inferior en movil, superior en escritorio */
+  nav.tabbar{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);display:flex;padding:6px}
+  nav.tabbar button{flex:1;background:transparent;border:none;cursor:pointer;padding:9px 4px;border-radius:14px;color:var(--muted);font-size:12.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px}
+  nav.tabbar button svg{width:20px;height:20px}
+  nav.tabbar button.on{background:var(--pine-soft);color:var(--pine)}
+  @media(min-width:860px){
+    nav.tabbar{position:static;max-width:1140px;margin:14px auto 0;padding:0 18px;background:transparent;border:none;box-shadow:none;backdrop-filter:none;justify-content:flex-start;gap:8px}
+    nav.tabbar button{flex:0 0 auto;flex-direction:row;padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13.5px}
+    nav.tabbar button svg{display:none}
+    nav.tabbar button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  }
+  main{max-width:1140px;margin:0 auto;padding:18px}
+  h2.sec{font-size:19px;letter-spacing:-.01em;margin:22px 2px 12px}
+  h2.sec:first-child{margin-top:4px}
+  /* ---------- bento ---------- */
+  .bento{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(min-width:860px){.bento{grid-template-columns:repeat(4,1fr);gap:12px}}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;min-height:104px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px}
+  .tile .n{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .tile .l{color:var(--muted);font-size:12.5px;font-weight:500}
+  .tile.hero{grid-column:span 2;background:var(--pine);border-color:var(--pine);color:#fff;min-height:128px}
+  .tile.hero .n{font-size:30px}
+  .tile.hero .l{color:#BFD2C4}
+  @media(min-width:860px){.tile.hero{grid-row:span 2;min-height:220px}.tile.hero .n{font-size:36px}}
+  .tile.sand{background:var(--sand);border-color:var(--sand)}
+  .tile.alert{background:var(--clay-soft);border-color:#EFD4C2}
+  .tile.alert .n{color:var(--clay)}
+  /* ---------- hojas / formularios ---------- */
+  .sheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 18px;box-shadow:var(--shadow);margin-bottom:14px}
+  .doc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px 20px;box-shadow:var(--shadow);overflow-x:hidden;overflow-wrap:anywhere;word-break:break-word;max-width:100%}
+  .doc table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .doc pre{overflow-x:auto;max-width:100%}
+  .doc img{max-width:100%}
+  .doc a{overflow-wrap:anywhere}
+  .doc h1{font-size:26px;letter-spacing:-.02em;margin:0 0 8px}
+  .doc h2{font-size:21px;margin:30px 0 8px;letter-spacing:-.01em}
+  .doc h3{font-size:17px;margin:22px 0 6px}
+  .doc p,.doc li{line-height:1.6;font-size:15px}
+  .doc table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  .doc th,.doc td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  .doc blockquote{border-left:4px solid var(--pine);margin:14px 0;padding:6px 14px;background:var(--pine-soft);border-radius:0 8px 8px 0}
+  .doc code{background:var(--pine-soft);border-radius:6px;padding:1px 6px;font-size:13px}
+  .sheet h3{margin:0 0 14px;font-size:16.5px;letter-spacing:-.01em}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:0 0 6px}
+  input,select{width:100%;min-height:50px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);background:#FCFBF8;font-size:15px;color:var(--ink);margin:0 0 14px;outline:none}
+  input:focus,select:focus{border-color:var(--pine);background:#fff;box-shadow:0 0 0 3px var(--pine-soft)}
+  .grid2{display:grid;grid-template-columns:1fr;gap:0 14px}
+  @media(min-width:700px){.grid2{grid-template-columns:1fr 1fr}}
+  /* ---------- tablas ---------- */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse;min-width:600px}
+  th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:right;font-size:13.5px;white-space:nowrap}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em;background:#FBFAF6}
+  td:first-child,th:first-child{text-align:left}
+  tr:last-child td{border-bottom:none}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--sand);color:var(--muted)}
+  .pill.ok{background:var(--ok-soft);color:var(--ok)}
+  .pill.bad{background:var(--clay-soft);color:var(--clay)}
+  .pill.mid{background:var(--pine-soft);color:var(--pine)}
+  a{color:var(--pine);font-weight:600;cursor:pointer;text-decoration:none}
+  .msg{padding:12px 16px;border-radius:var(--r-sm);margin:0 0 12px;font-size:14px}
+  .msg.err{background:var(--clay-soft);color:var(--clay)}
+  .msg.good{background:var(--ok-soft);color:var(--ok)}
+  .mut{color:var(--muted);font-size:13px}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="vista-login">
+  <div class="login-box">
+    <div class="brand"><div class="logo">f</div><div class="name">fdigitb</div></div>
+    <div class="login-card">
+      <h1>Bienvenido</h1>
+      <p class="sub">Sistema de creditos personales. Ingresa con tu usuario y tu clave.</p>
+      <form id="login-form">
+        <label for="us">Usuario</label>
+        <input type="text" id="us" autocomplete="username" value="adminfdigitb">
+        <label for="pw">Clave</label>
+        <input type="password" id="pw" autocomplete="current-password">
+        <div id="login-msg"></div>
+        <button class="btn block" type="submit">Entrar al panel</button>
+      </form>
+    </div>
+    <p class="mut" style="text-align:center;margin-top:16px">fdigitb · Financiera Digitbank<br><a href="https://financieradigibank.com/privacidad" target="_blank" rel="noopener">Politica de tratamiento de datos personales</a></p>
+  </div>
+</div>
+<div id="vista-app" class="hidden">
+  <header><div class="bar">
+    <div class="brand"><div class="logo">f</div><div class="name">fdigitb</div></div>
+    <a class="btn ghost" href="https://ayuda.financieradigibank.com" target="_blank" rel="noopener" style="text-decoration:none">Ayuda</a> <button class="btn ghost" onclick="logout()">Salir</button>
+  </div></header>
+  <nav class="tabbar">
+    <button id="tab-panel" class="on" onclick="ver('panel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>Panel</button>
+    <button id="tab-clientes" onclick="ver('clientes')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 15.2c2.3.3 4 1.9 4.6 4.3"/></svg>Clientes</button>
+    <button id="tab-creditos" onclick="ver('creditos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19"/></svg>Creditos</button>
+    <button id="tab-solicitudes" onclick="ver('solicitudes')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1Z"/></svg>Solicitudes</button>
+    <button id="tab-micuenta" style="display:none" onclick="ver('micuenta');cargarMiCuenta()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-3.6 3.9-5.4 7.5-5.4s6.6 1.8 7.5 5.4"/></svg>Mi cuenta</button>
+    <button id="tab-ajustes" style="display:none" onclick="ver('ajustes');cargarAjustes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95A7 7 0 0 0 14.1 5.1L13.7 2.6h-3.4L9.9 5.1a7 7 0 0 0-2.4 1.44l-2.36-.95-2 3.46 2 1.55A7 7 0 0 0 5 12c0 .48.05.94.14 1.4l-2 1.55 2 3.46 2.36-.95c.7.62 1.5 1.1 2.4 1.44l.4 2.5h3.4l.4-2.5a7 7 0 0 0 2.4-1.44l2.36.95 2-3.46-2-1.55c.09-.46.14-.92.14-1.4Z"/></svg>Ajustes</button>
+    <button id="tab-documentacion" style="display:none" onclick="ver('documentacion');cargarDocumentacion()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>Documentacion</button>
+  </nav>
+  <main>
+    <div id="msg"></div>
+    <section id="sec-panel"></section>
+    <section id="sec-clientes" class="hidden"></section>
+    <section id="sec-creditos" class="hidden"></section>
+    <section id="sec-solicitudes" class="hidden"></section>
+    <section id="sec-micuenta" class="hidden"></section>
+    <section id="sec-ajustes" class="hidden"></section>
+    <section id="sec-documentacion" class="hidden"></section>
+    <section id="sec-detalle" class="hidden"></section>
+  </main>
+</div>
+<script>
+
+var S = null;
+var TK = "fdigitb_token";
+function fmt(n){ return "$" + Number(n||0).toLocaleString("es-CO"); }
+function esc(t){ return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function val(id){ return document.getElementById(id).value; }
+function msg(txt, ok){ var m=document.getElementById("msg"); m.innerHTML = txt ? '<div class="msg '+(ok?"good":"err")+'">'+esc(txt)+'</div>' : ""; if(txt) setTimeout(function(){ m.innerHTML=""; }, 7000); }
+function authHeaders(extra){
+  var h = extra || {};
+  var t = localStorage.getItem(TK);
+  if(t) h["Authorization"] = "Bearer " + t;
+  return h;
+}
+function api(path, opts){
+  opts = opts || {};
+  opts.headers = authHeaders(opts.headers || {});
+  return fetch(path, opts).then(function(r){
+    return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||"Error inesperado"); return j; });
+  });
+}
+function login(ev){
+  if(ev) ev.preventDefault();
+  var box = document.getElementById("login-msg");
+  box.innerHTML = '<div class="msg">Verificando...</div>';
+  api("/api/login", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({username:val("us").trim(), password:val("pw")})})
+    .then(function(r){
+      if(r.token) localStorage.setItem(TK, r.token);
+      if(r.user) localStorage.setItem("fdigitb_user", JSON.stringify(r.user));
+      box.innerHTML = "";
+      mostrarApp();
+      iniciar();
+    })
+    .catch(function(e){ box.innerHTML = '<div class="msg err">'+esc(e.message)+'</div>'; });
+  return false;
+}
+var lf = document.getElementById("login-form");
+if(lf) lf.addEventListener("submit", login);
+function usuarioLocal(){
+  try { return JSON.parse(localStorage.getItem("fdigitb_user") || "null"); } catch(e){ return null; }
+}
+function mostrarApp(){
+  document.getElementById("vista-login").classList.add("hidden");
+  document.getElementById("vista-app").classList.remove("hidden");
+  var u = usuarioLocal();
+  var esCliente = u && u.rol === "cliente";
+  var esSuper = u && u.rol === "superadmin";
+  ["panel","clientes","creditos","solicitudes"].forEach(function(t){
+    document.getElementById("tab-"+t).style.display = esCliente ? "none" : "";
+  });
+  document.getElementById("tab-micuenta").style.display = esCliente ? "" : "none";
+  document.getElementById("tab-ajustes").style.display = esSuper ? "" : "none";
+  document.getElementById("tab-documentacion").style.display = esSuper ? "" : "none";
+  if(esCliente) ver("micuenta");
+}
+function iniciar(){
+  var u = usuarioLocal();
+  if(u && u.rol === "cliente"){ cargarMiCuenta(); } else { cargar(); }
+}
+function mostrarLogin(){
+  document.getElementById("vista-app").classList.add("hidden");
+  document.getElementById("vista-login").classList.remove("hidden");
+}
+function pintarSolicitudes(){
+  var lista = S.solicitudes || [];
+  var nuevas = lista.filter(function(x){ return x.estado === "nueva"; }).length;
+  var h = '<div class="card" style="margin-bottom:16px"><h3>Solicitudes desde la landing</h3><p class="muted">Las personas que pidieron un credito en la pagina web aparecen aqui. Tienes <strong>' + nuevas + ' nueva(s)</strong> por atender.</p></div>';
+  if(!lista.length){ h += '<div class="card"><p class="muted">Todavia no hay solicitudes.</p></div>'; }
+  else {
+    h += '<div class="card tbl"><table><tr><th>Fecha</th><th>Nombre</th><th>Contacto</th><th>Monto</th><th>Plazo</th><th>Referido</th><th>Estado</th><th></th></tr>';
+    lista.forEach(function(x){
+      h += '<tr><td>' + (x.creado_en || '').substring(0,10) + '</td><td><strong>' + esc(x.nombre) + '</strong></td><td>' + esc(x.telefono || '') + (x.email ? '<br><span class="muted">' + esc(x.email) + '</span>' : '') + '</td><td>' + fmt(x.monto) + '</td><td>' + (x.plazo || '') + '</td><td>' + esc(x.codigo_referido || '—') + '</td><td>' + (x.estado === 'nueva' ? '<span class="tag warn">Nueva</span>' : '<span class="tag ok">Atendida</span>') + '</td><td>' + (x.estado === 'nueva' ? '<button class="btn ghost sm" onclick="atender(' + x.id + ')">Marcar atendida</button>' : '') + '</td></tr>';
+    });
+    h += '</table></div>';
+  }
+  document.getElementById("sec-solicitudes").innerHTML = h;
+}
+function atender(id){
+  api("/api/solicitudes/" + id + "/atender", {method:"POST"}).then(function(){ cargar(); }).catch(function(e){ alert(e.message); });
+}
+
+function logout(){
+  localStorage.removeItem(TK);
+  localStorage.removeItem("fdigitb_user");
+  api("/api/logout",{method:"POST"}).then(function(){ location.reload(); }).catch(function(){ location.reload(); });
+}
+function cargar(){
+  return api("/api/state").then(function(s){ S=s; pintarPanel(); pintarClientes(); pintarCreditos(); pintarSolicitudes(); })
+    .catch(function(e){
+      if(String(e.message).indexOf("autorizado")>=0){ mostrarLogin(); }
+      else if(!document.getElementById("vista-app").classList.contains("hidden")){ msg("Error cargando datos: "+e.message); }
+      else { document.getElementById("login-msg").innerHTML = '<div class="msg err">No cargaron los datos: '+esc(e.message)+'</div>'; }
+    });
+}
+function ver(cual){
+  ["panel","clientes","creditos","solicitudes","micuenta","ajustes","documentacion"].forEach(function(t){
+    document.getElementById("tab-"+t).classList.toggle("on", t===cual);
+    document.getElementById("sec-"+t).classList.toggle("hidden", t!==cual);
+  });
+  document.getElementById("sec-detalle").classList.add("hidden");
+  window.scrollTo({top:0});
+}
+function tile(n, l, cls){ return '<div class="tile '+(cls||"")+'"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>'; }
+function pintarPanel(){
+  var p = S.panel;
+  var h = '<h2 class="sec">Resumen</h2><div class="bento">';
+  h += tile(fmt(p.cartera_capital), "Cartera · capital pendiente", "hero");
+  h += tile(fmt(p.recaudo), "Recaudo registrado");
+  h += tile(fmt(p.fondos_custodia), "Fondos de garantia en custodia", "sand");
+  h += tile(String(p.total_clientes), "Clientes");
+  h += tile(String(p.creditos_activos), "Creditos activos");
+  h += tile(fmt(p.intereses_recaudados), "Intereses recaudados");
+  h += tile(fmt(p.premios_causados), "Premios a referidos causados", "sand");
+  h += tile(fmt(p.plataforma_ganada), "Plataforma recaudada");
+  if(p.cuotas_vencidas>0) h += tile(String(p.cuotas_vencidas), "Cuotas vencidas · " + fmt(p.monto_vencido), "alert");
+  else h += tile("0", "Cuotas vencidas · todo al dia");
+  h += '</div>';
+  document.getElementById("sec-panel").innerHTML = h;
+}
+function pintarClientes(){
+  var h = '<h2 class="sec">Clientes</h2><div class="sheet"><h3>Nuevo cliente</h3><div class="grid2"><div><label>Nombre</label><input id="nc-nombre"></div><div><label>Documento</label><input id="nc-doc"></div><div><label>Telefono</label><input id="nc-tel"></div><div><label>Correo</label><input id="nc-email"></div></div>';
+  h += '<label>Referido por (solo clientes con fondo desde ' + fmt(S.umbral_referido) + ')</label><select id="nc-ref"><option value="">Sin referido</option>';
+  S.clientes.forEach(function(c){ if(c.elegible_referir) h += '<option value="'+c.id+'">'+esc(c.nombre)+' ('+c.codigo_referido+')</option>'; });
+  h += '</select><button class="btn" onclick="crearCliente()">Crear cliente</button></div>';
+  h += '<div class="tw"><table><tr><th>Nombre</th><th>Codigo</th><th>Referido por</th><th>Fondo garantia</th><th>Premios</th><th>Puede referir</th><th>Acceso al panel</th><th></th></tr>';
+  S.clientes.forEach(function(c){
+    h += '<tr><td>'+esc(c.nombre)+'</td><td>'+esc(c.codigo_referido||"")+'</td><td>'+esc(c.referido_por_nombre||"-")+'</td><td>'+fmt(c.fondo)+'</td><td>'+fmt(c.premios)+'</td><td>'+(c.elegible_referir?'<span class="pill ok">Si</span>':'<span class="pill">Faltan '+fmt(c.falta_para_referir)+'</span>')+'</td><td>'+(c.acceso_usuario?'<span class="pill mid">'+esc(c.acceso_usuario)+'</span>':'<button class="btn ghost sm" onclick="darAcceso('+c.id+')">Dar acceso</button>')+'</td><td><button class="btn ghost sm" onclick="eliminarCliente('+c.id+')">Eliminar</button></td></tr>';
+  });
+  h += '</table></div>';
+  document.getElementById("sec-clientes").innerHTML = h;
+}
+function eliminarCliente(id){
+  var c = null; (S.clientes||[]).forEach(function(x){ if(x.id===id) c=x; });
+  var nombre = c ? c.nombre : ("#" + id);
+  if(!window.confirm("Eliminar al cliente " + nombre + "? Solo es posible si no tiene creditos ni referidos asociados. Esta accion no se puede deshacer.")) return;
+  api("/api/clientes/" + id, {method:"DELETE"})
+    .then(function(){ msg("Cliente eliminado.", true); cargar(); })
+    .catch(function(e){ msg(e.message); });
+}
+function darAcceso(clienteId){
+  var usuario = window.prompt("Usuario para que el cliente entre a su panel (ej: su numero de documento):");
+  if(!usuario) return;
+  var clave = window.prompt("Clave inicial del cliente (minimo 8 caracteres). Entregasela por un canal seguro:");
+  if(!clave) return;
+  api("/api/clientes/" + clienteId + "/acceso", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({usuario: usuario.trim(), password: clave})})
+    .then(function(){ msg("Acceso creado. El cliente ya puede entrar con su usuario y clave.", true); cargar(); })
+    .catch(function(e){ msg(e.message); });
+}
+function cargarMiCuenta(){
+  api("/api/micuenta").then(function(d){
+    if(d.error){ msg(d.error); return; }
+    var c = d.cliente;
+    var h = '<h2 class="sec">Hola, ' + esc(String(c.nombre).split(" ")[0]) + '</h2><div class="bento">';
+    h += tile(fmt(d.fondo), "Mi fondo de garantia", "hero");
+    h += tile(fmt(d.premios), "Mis premios por referidos", "sand");
+    h += tile(d.elegible_referir ? "Si" : "Faltan " + fmt(d.falta_para_referir), "Puedo referir (meta " + fmt(d.umbral_referido) + ")");
+    h += tile(esc(c.codigo_referido || ""), "Mi codigo de referido");
+    h += '</div>';
+    h += '<div class="sheet" style="margin-bottom:14px"><h3>Invita y gana</h3><p class="mut" style="margin:0 0 8px">Comparte tu enlace: cuando alguien pida su credito con tu codigo y pague sus cuotas, ganas una comision del 2% mensual sobre el saldo de su credito, prorrateada segun su frecuencia de pago.</p><p style="margin:0"><strong>' + esc(d.enlace_referido) + '</strong></p></div>';
+    h += '<div class="sheet" style="margin-bottom:14px"><h3>Tu credito en claro</h3><p class="mut" style="margin:0;line-height:1.55">Tu cuota se calcula sobre tu saldo con un cargo total del <strong>10% mensual</strong> (equivalente a 213,8% efectivo anual), repartido asi: el <strong>interes segun la tasa T aprobada en tu credito</strong> al abrirlo, <strong>1% de plataforma</strong>, <strong>2% para quien te refirio</strong> (solo si tienes referente) y <strong>el resto a tu fondo de garantia</strong> (dinero a tu nombre, no es un costo). El detalle de cada peso viene discriminado en cada cuota. Tu fondo acumulado y cada pago con su soporte siempre estan visibles aqui. Politica de datos: <a href="https://financieradigibank.com/privacidad" target="_blank" rel="noopener">financieradigibank.com/privacidad</a>.</p></div>';
+    d.creditos.forEach(function(det){
+      var cr = det.credito;
+      var totalCr = 0, pagadoCr = 0;
+      det.cuotas.forEach(function(q){ totalCr += Number(q.cuota||0); pagadoCr += Number(q.pagado||0); });
+      h += '<div class="sheet" style="margin-bottom:14px"><h3>Mi credito #' + cr.id + ' · ' + fmt(cr.monto) + ' · Cuota ' + fmt(cr.cuota_valor) + '</h3>';
+      h += '<p class="mut" style="margin:0 0 10px">Total a pagar en este credito: <strong>' + fmt(totalCr) + '</strong> · Ya pagaste: <strong>' + fmt(pagadoCr) + '</strong> · Te falta: <strong>' + fmt(totalCr - pagadoCr) + '</strong></p>';
+      h += '<div class="tw"><table><tr><th>#</th><th>Vence</th><th>Cuota</th><th>Pagado</th><th>Estado</th></tr>';
+      det.cuotas.forEach(function(q){
+        h += '<tr><td>' + q.numero + '</td><td>' + esc(q.fecha_vencimiento) + '</td><td>' + fmt(q.cuota) + '</td><td>' + fmt(q.pagado) + '</td><td>' + (q.estado === "pagada" ? '<span class="pill ok">Pagada</span>' : (q.estado === "parcial" ? '<span class="pill mid">Parcial</span>' : '<span class="pill bad">Pendiente</span>')) + '</td></tr>';
+      });
+      h += '</table></div></div>';
+    });
+    if(d.referidos.length){
+      h += '<div class="sheet"><h3>Mis referidos</h3><div class="tw"><table><tr><th>Nombre</th><th>Su fondo</th></tr>';
+      d.referidos.forEach(function(r){ h += '<tr><td>' + esc(r.nombre) + '</td><td>' + fmt(r.fondo) + '</td></tr>'; });
+      h += '</table></div></div>';
+    }
+    document.getElementById("sec-micuenta").innerHTML = h;
+  }).catch(function(e){
+    if(String(e.message).indexOf("autorizado") >= 0 || String(e.message).indexOf("rol") >= 0) mostrarLogin();
+    else msg("Error cargando tu cuenta: " + e.message);
+  });
+}
+var _docCargada = false;
+function cargarDocumentacion(){
+  if(_docCargada) return;
+  fetch("/api/documentacion", {headers: authHeaders({})}).then(function(r){
+    if(!r.ok) throw new Error("No autorizado");
+    return r.text();
+  }).then(function(h){
+    document.getElementById("sec-documentacion").innerHTML = '<div class="doc">' + h + '</div>';
+    _docCargada = true;
+  }).catch(function(e){ msg("No se pudo cargar la documentacion: " + e.message); });
+}
+function cargarAjustes(){
+  Promise.all([api("/api/config"), api("/api/usuarios")]).then(function(rs){
+    var cfg = rs[0], us = rs[1].usuarios || [];
+    var h = '<h2 class="sec">Ajustes · Super Admin</h2>';
+    h += '<div class="sheet" style="margin-bottom:14px"><h3>Reglas del negocio</h3><label>Tope del fondo para poder referir (COP)</label><input id="aj-umbral" type="number" inputmode="numeric" value="' + cfg.umbral_referido + '"><button class="btn" onclick="guardarUmbral()">Guardar tope</button><p class="mut" style="margin:10px 0 0">Las tasas de los creditos (interes, fondo y plataforma) se definen en cada credito al crearlo.</p></div>';
+    h += '<div class="sheet" style="margin-bottom:14px"><h3>Nuevo usuario del equipo</h3><div class="grid2"><div><label>Nombre</label><input id="aj-nombre"></div><div><label>Usuario</label><input id="aj-usuario"></div><div><label>Clave (minimo 8)</label><input id="aj-clave" type="password"></div><div><label>Rol</label><select id="aj-rol"><option value="admin">Admin</option><option value="superadmin">Super Admin</option></select></div></div><button class="btn" onclick="crearUsuarioEquipo()">Crear usuario</button></div>';
+    h += '<div class="tw"><table><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th></th></tr>';
+    window._us = us;
+    us.forEach(function(u){ h += '<tr><td>' + esc(u.nombre) + '</td><td>' + esc(u.usuario) + '</td><td>' + esc(u.rol) + '</td><td>' + (u.activo ? '<span class="pill ok">Activo</span>' : '<span class="pill bad">Inactivo</span>') + '</td><td>' + (u.usuario !== "adminfdigitb" ? '<button class="btn ghost sm" onclick="eliminarUsuario(' + u.id + ')">Eliminar</button>' : '') + '</td></tr>'; });
+    h += '</table></div>';
+    document.getElementById("sec-ajustes").innerHTML = h;
+  }).catch(function(e){ msg(e.message); });
+}
+function guardarUmbral(){
+  api("/api/config", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({umbral_referido: Number(val("aj-umbral"))})})
+    .then(function(){ msg("Tope actualizado", true); cargar(); }).catch(function(e){ msg(e.message); });
+}
+function eliminarUsuario(id){
+  var usuario = "#" + id; (window._us || []).forEach(function(x){ if(x.id===id) usuario = x.usuario; });
+  if(!window.confirm("Eliminar el usuario " + usuario + "? Ya no podra ingresar al panel.")) return;
+  api("/api/usuarios/" + id, {method:"DELETE"})
+    .then(function(){ msg("Usuario eliminado.", true); cargarAjustes(); })
+    .catch(function(e){ msg(e.message); });
+}
+function crearUsuarioEquipo(){
+  var body = {nombre: val("aj-nombre"), usuario: val("aj-usuario"), password: val("aj-clave"), rol: val("aj-rol")};
+  api("/api/usuarios", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)})
+    .then(function(){ msg("Usuario creado", true); cargarAjustes(); }).catch(function(e){ msg(e.message); });
+}
+function crearCliente(){
+  var body = {nombre:val("nc-nombre"), documento:val("nc-doc"), telefono:val("nc-tel"), email:val("nc-email"), referido_por_id:val("nc-ref")||null};
+  api("/api/clientes",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+    .then(function(){ msg("Cliente creado", true); cargar(); }).catch(function(e){ msg(e.message); });
+}
+function pintarCreditos(){
+  var h = '<h2 class="sec">Creditos</h2><div class="sheet"><h3>Nuevo credito</h3><div class="grid2"><div><label>Cliente</label><select id="nr-cliente">';
+  S.clientes.forEach(function(c){ h += '<option value="'+c.id+'">'+esc(c.nombre)+'</option>'; });
+  h += '</select></div><div><label>Monto (COP)</label><input id="nr-monto" type="number" inputmode="numeric" value="2000000"></div><div><label>Plazo (meses, 1 a 24)</label><input id="nr-plazo" type="number" inputmode="numeric" value="12"></div><div><label>Fecha de inicio</label><input id="nr-fecha" type="date"></div><div><label>Tasa T · Interes % (queda fijada en este credito)</label><input id="nr-t" type="number" step="0.1" value="3"></div><div><label>Frecuencia de pago</label><select id="nr-frec"><option value="mensual">Mensual</option><option value="quincenal">Quincenal</option><option value="semanal">Semanal</option><option value="diaria">Diaria</option></select></div></div>';
+  h += '<button class="btn" onclick="crearCredito()">Crear credito y generar tabla</button><p class="mut" style="margin:12px 0 0">Reparto aprobado: interes = tasa T fijada en este credito; plataforma 1%; referente 2% solo si el cliente tiene referente; el resto va al fondo de garantia. Total: 10% mensual sobre el saldo, prorrateado segun la frecuencia, con amortizacion francesa.</p></div>';
+  h += '<div class="tw"><table><tr><th>#</th><th>Cliente</th><th>Monto</th><th>Frecuencia</th><th>Cuota</th><th>Pagadas</th><th>Saldo capital</th><th>Estado</th><th></th></tr>';
+  S.creditos.forEach(function(c){
+    h += '<tr><td>'+c.id+'</td><td>'+esc(c.cliente_nombre)+'</td><td>'+fmt(c.monto)+'</td><td>'+esc(c.frecuencia||"mensual")+'</td><td>'+fmt(c.cuota_valor)+'</td><td>'+c.cuotas_pagadas+'/'+c.plazo+'</td><td>'+fmt(c.saldo_capital)+'</td><td>'+(c.estado==="pagado"?'<span class="pill ok">Pagado</span>':'<span class="pill mid">Activo</span>')+'</td><td><a onclick="detalle('+c.id+')">Ver</a></td></tr>';
+  });
+  h += '</table></div>';
+  document.getElementById("sec-creditos").innerHTML = h;
+}
+function crearCredito(){
+  var body = {cliente_id:val("nr-cliente"), monto:Number(val("nr-monto")), plazo_meses:Number(val("nr-plazo")), frecuencia:val("nr-frec"), tasa_t:Number(val("nr-t")), fecha_inicio:val("nr-fecha")||null};
+  api("/api/creditos",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+    .then(function(r){ msg("Credito creado. Cuota: "+fmt(r.cuota), true); cargar().then(function(){ detalle(r.id); }); }).catch(function(e){ msg(e.message); });
+}
+function detalle(id){
+  api("/api/creditos/"+id).then(function(d){
+    ["panel","clientes","creditos","solicitudes","micuenta","ajustes","documentacion"].forEach(function(t){ document.getElementById("sec-"+t).classList.add("hidden"); });
+    var c = d.credito;
+    var h = '<h2 class="sec">Credito #'+c.id+' · '+esc(c.cliente_nombre)+'</h2>';
+    h += '<div class="bento" style="margin-bottom:14px">';
+    h += tile(fmt(c.monto), "Monto", "sand");
+    h += tile(fmt(c.cuota_valor), "Cuota fija");
+    h += tile(c.tasa_interes+" / "+c.tasa_fondo+" / "+c.tasa_plataforma+" / "+(c.tasa_referente||0), "% T / fondo / plataforma / referente");
+    h += tile(esc(c.frecuencia||"mensual")+" - "+(c.plazo_meses||c.plazo)+" meses - "+c.plazo+" cuotas", "Frecuencia y plazo");
+    h += tile(esc(c.fecha_inicio), "Fecha de inicio");
+    h += '</div>';
+    h += '<div class="tw"><table><tr><th>#</th><th>Vence</th><th>Saldo ini.</th><th>Interes</th><th>Fondo</th><th>Plataforma</th><th>Referente</th><th>Capital</th><th>Cuota</th><th>Pagado</th><th>Estado</th></tr>';
+    d.cuotas.forEach(function(q){
+      h += '<tr><td>'+q.numero+'</td><td>'+esc(q.fecha_vencimiento)+'</td><td>'+fmt(q.saldo_inicial)+'</td><td>'+fmt(q.interes)+'</td><td>'+fmt(q.fondo)+'</td><td>'+fmt(q.plataforma)+'</td><td>'+fmt(q.referente||0)+'</td><td>'+fmt(q.capital)+'</td><td>'+fmt(q.cuota)+'</td><td>'+fmt(q.pagado)+'</td><td>'+(q.estado==="pagada"?'<span class="pill ok">Pagada</span>':(q.estado==="parcial"?'<span class="pill mid">Parcial</span>':'<span class="pill bad">Pendiente</span>'))+'</td></tr>';
+    });
+    h += '</table></div>';
+    h += '<div class="sheet" style="margin-top:14px"><h3>Registrar pago</h3><div class="grid2"><div><label>Monto</label><input id="pg-monto" type="number" inputmode="numeric"></div><div><label>Fecha</label><input id="pg-fecha" type="date"></div><div><label>Medio</label><select id="pg-medio"><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option><option value="otro">Otro</option></select></div><div><label>Referencia de la transferencia</label><input id="pg-ref"></div></div><label>Soporte (foto o PDF, max 1.5 MB en el prototipo)</label><input id="pg-file" type="file" accept="image/*,application/pdf"><button class="btn" onclick="pagar('+c.id+')">Registrar pago</button></div>';
+    h += '<h2 class="sec">Pagos registrados</h2><div class="tw"><table><tr><th>Fecha</th><th>Monto</th><th>Aplicado</th><th>Excedente</th><th>Medio</th><th>Referencia</th><th>Soporte</th></tr>';
+    d.pagos.forEach(function(p){
+      h += '<tr><td>'+esc(p.fecha)+'</td><td>'+fmt(p.monto)+'</td><td>'+fmt(p.aplicado)+'</td><td>'+fmt(p.excedente)+'</td><td>'+esc(p.medio||"")+'</td><td>'+esc(p.referencia||"")+'</td><td>'+(p.soporte_id?'<a href="/api/soportes/'+p.soporte_id+'" target="_blank">Ver</a>':"-")+'</td></tr>';
+    });
+    h += '</table></div><p style="margin-top:16px"><button class="btn ghost" id="btn-volver">← Volver a creditos</button></p>';
+    var sec = document.getElementById("sec-detalle"); sec.innerHTML = h; sec.classList.remove("hidden");
+    var bv = document.getElementById("btn-volver");
+    if(bv) bv.addEventListener("click", function(){ ver("creditos"); });
+    window.scrollTo({top:0});
+  }).catch(function(e){ msg(e.message); });
+}
+function pagar(creditoId){
+  var fd = new FormData();
+  fd.append("credito_id", creditoId);
+  fd.append("monto", val("pg-monto"));
+  fd.append("fecha", val("pg-fecha"));
+  fd.append("medio", val("pg-medio"));
+  fd.append("referencia", val("pg-ref"));
+  var f = document.getElementById("pg-file").files[0];
+  if(f) fd.append("soporte", f);
+  fetch("/api/pagos", {method:"POST", body: fd, headers: authHeaders()}).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||"Error inesperado"); return j; }); })
+    .then(function(r){ msg("Pago registrado. Aplicado: "+fmt(r.aplicado)+(r.excedente>0?" · Excedente a favor: "+fmt(r.excedente):""), true); cargar(); detalle(creditoId); })
+    .catch(function(e){ msg(e.message); });
+}
+if(localStorage.getItem(TK)){ mostrarApp(); iniciar(); }
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"24b1169a4d294b799eeee852aa1a9d7b","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B0D12">
+  <title>DIGITBANK — Sistema de Gestión de Préstamos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       1. PANTALLA INICIAL (PRD §4)
+       Fondo cristal líquido, nombre DIGITBANK arriba, moneda girando al centro,
+       dos botones: «Solicitar crédito» y «Cliente»
+       ======================================================================== -->
+  <section id="vista-landing">
+    <div class="liquid-bg" aria-hidden="true"></div>
+
+    <header class="landing-top">
+      <h1 class="brand-wordmark">DIGITBANK</h1>
+      <p class="brand-sub">Financiera · Créditos y Portafolio</p>
+    </header>
+
+    <div class="coin-stage">
+      <div class="coin-3d" role="img" aria-label="Moneda oficial de Financiera Digitbank girando sobre su propio eje">
+        <div class="coin-face front">
+          <div class="coin-ring">
+            <span class="coin-symbol">Đ</span>
+            <span class="coin-legend">DIGITBANK</span>
+          </div>
+        </div>
+        <div class="coin-face back">
+          <div class="coin-ring">
+            <span class="coin-symbol">10%</span>
+            <span class="coin-legend">FONDO &amp; RED</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="landing-actions">
+        <button type="button" class="btn btn-primary" id="btn-abrir-solicitud">Solicitar crédito</button>
+        <button type="button" class="btn btn-glass" id="btn-abrir-login">Cliente</button>
+      </div>
+    </div>
+
+    <footer class="landing-footer">
+      <button type="button" class="link-btn" id="btn-abrir-simulador">Simulador de préstamo</button>
+      <span>·</span>
+      <button type="button" class="link-btn" id="btn-abrir-admin-login">Administración</button>
+      <span>·</span>
+      <button type="button" class="link-btn" id="btn-abrir-privacidad">Ley 1581 de 2012</button>
+    </footer>
+  </section>
+
+  <!-- ========================================================================
+       2. SHELL INTERNO DE LA APLICACIÓN (PANEL CLIENTE / ADMIN / SUPER ADMIN)
+       ======================================================================== -->
+  <div id="vista-app" class="hidden">
+    <header class="app-header">
+      <div class="app-header-inner">
+        <div class="brand-inline">
+          <span class="coin-mini" aria-hidden="true">Đ</span>
+          <span>DIGITBANK</span>
+          <span id="badge-rol-activo" class="badge gold"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="btn btn-outline btn-sm" id="btn-header-simulador">Simulador</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-header-2fa">Seguridad 2FA</button>
+          <button type="button" class="btn btn-dark btn-sm" id="btn-salir">Salir</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div id="app-banner"></div>
+
+      <!-- PANEL DEL CLIENTE (PRD §4, RF-04, RF-13, RF-14, RF-15) -->
+      <section id="panel-cliente" class="hidden">
+        <!-- Vista resumen básica al entrar con los dos botones: «Mi crédito» y «Mi portafolio» -->
+        <div class="card" id="cliente-cabecera"></div>
+
+        <div class="nav-pills" role="tablist" aria-label="Secciones del cliente">
+          <button type="button" id="tab-cli-credito" class="active">Mi crédito</button>
+          <button type="button" id="tab-cli-portafolio">Mi portafolio</button>
+          <button type="button" id="tab-cli-ahorro">Retiro de ahorro / Fondo</button>
+        </div>
+
+        <div id="vista-cli-credito"></div>
+        <div id="vista-cli-portafolio" class="hidden"></div>
+        <div id="vista-cli-ahorro" class="hidden"></div>
+      </section>
+
+      <!-- PANEL DE ADMINISTRACIÓN Y SUPER ADMIN (PRD §7.1, RF-01..RF-11) -->
+      <section id="panel-admin" class="hidden">
+        <nav class="nav-pills" aria-label="Módulos de administración">
+          <button type="button" data-admin-tab="cedula" class="active">Caja / Cédula (§7.1)</button>
+          <button type="button" data-admin-tab="cartera">Reportes y Cartera</button>
+          <button type="button" data-admin-tab="creditos">Créditos</button>
+          <button type="button" data-admin-tab="clientes">Clientes</button>
+          <button type="button" data-admin-tab="pagos">Pagos y Tickets</button>
+          <button type="button" data-admin-tab="solicitudes">Solicitudes y Retiros</button>
+          <button type="button" data-admin-tab="migracion">Migración Excel (210)</button>
+          <button type="button" data-admin-tab="superadmin" id="tab-btn-superadmin" class="hidden">Super Admin</button>
+        </nav>
+
+        <div id="admin-sec-cedula"></div>
+        <div id="admin-sec-cartera" class="hidden"></div>
+        <div id="admin-sec-creditos" class="hidden"></div>
+        <div id="admin-sec-clientes" class="hidden"></div>
+        <div id="admin-sec-pagos" class="hidden"></div>
+        <div id="admin-sec-solicitudes" class="hidden"></div>
+        <div id="admin-sec-migracion" class="hidden"></div>
+        <div id="admin-sec-superadmin" class="hidden"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       3. DIÁLOGO: SOLICITAR CRÉDITO — CLIENTE NUEVO (PRD §4, RF-16)
+       ======================================================================== -->
+  <dialog id="dlg-solicitud" closedby="any">
+    <div class="dialog-head">
+      <h2>Solicitar crédito · Cliente nuevo</h2>
+      <form method="dialog"><button class="btn btn-outline btn-sm" value="close">Cerrar</button></form>
+    </div>
+    <div class="dialog-body">
+      <form id="form-solicitud-publica">
+        <div class="grid-2">
+          <div class="field">
+            <label for="sol-nombre">Nombre completo</label>
+            <input id="sol-nombre" name="nombre" type="text" required autocomplete="name">
+            <div class="error-msg">Ingrese su nombre completo.</div>
+          </div>
+          <div class="field">
+            <label for="sol-cedula">Número de cédula</label>
+            <input id="sol-cedula" name="cedula" type="text" inputmode="numeric" required pattern="[0-9A-Za-z\-]{5,20}">
+            <div class="error-msg">Ingrese un documento válido.</div>
+          </div>
+          <div class="field">
+            <label for="sol-telefono">Teléfono / WhatsApp</label>
+            <input id="sol-telefono" name="telefono" type="tel" inputmode="tel" required autocomplete="tel">
+            <div class="error-msg">Ingrese su número de contacto.</div>
+          </div>
+          <div class="field">
+            <label for="sol-email">Correo electrónico</label>
+            <input id="sol-email" name="email" type="email" inputmode="email" required autocomplete="email">
+            <div class="error-msg">Ingrese un correo válido.</div>
+          </div>
+          <div class="field">
+            <label for="sol-ciudad">Ciudad</label>
+            <input id="sol-ciudad" name="ciudad" type="text" required autocomplete="address-level2">
+          </div>
+          <div class="field">
+            <label for="sol-direccion">Dirección</label>
+            <input id="sol-direccion" name="direccion" type="text" autocomplete="street-address">
+          </div>
+          <div class="field">
+            <label for="sol-billetera">Billetera electrónica (Nequi / Daviplata / Banco)</label>
+            <input id="sol-billetera" name="billetera" type="text">
+          </div>
+          <div class="field">
+            <label for="sol-referente">Código de quien lo refiere (opcional)</label>
+            <input id="sol-referente" name="codigo_referente" type="text" placeholder="Ej. DB-1234-500">
+          </div>
+          <div class="field">
+            <label for="sol-monto">Valor solicitado ($500.000 a $2.000.000)</label>
+            <input id="sol-monto" name="monto" type="number" min="500000" max="2000000" step="50000" value="1000000" required>
+            <div class="error-msg">El monto debe estar entre $500.000 y $2.000.000 COP.</div>
+          </div>
+          <div class="field">
+            <label for="sol-frecuencia">Frecuencia de pago</label>
+            <select id="sol-frecuencia" name="frecuencia" required>
+              <option value="mensual">Mensual</option>
+              <option value="quincenal">Quincenal</option>
+              <option value="semanal">Semanal</option>
+              <option value="diaria">Diaria</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sol-plazo">Plazo (1 a 24 meses)</label>
+            <input id="sol-plazo" name="plazo_meses" type="number" min="1" max="24" value="12" required>
+          </div>
+          <div class="field">
+            <label for="sol-genero">Género</label>
+            <select id="sol-genero" name="genero">
+              <option value="">Seleccione...</option>
+              <option value="M">Masculino</option>
+              <option value="F">Femenino</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card" style="background:var(--canvas-light);margin:10px 0 14px" id="sol-resumen-cuota"></div>
+
+        <div class="field">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
+            <input id="sol-acepto" type="checkbox" required style="width:20px;min-height:20px;margin-top:2px">
+            <span>Autorizo de manera libre, previa y expresa el tratamiento de mis datos personales por parte de Financiera Digitbank conforme a la Ley 1581 de 2012.</span>
+          </label>
+        </div>
+
+        <div id="sol-msg"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Enviar solicitud de crédito</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ========================================================================
+       4. DIÁLOGO: INGRESO CON CLAVE (CLIENTE / ADMIN + 2FA)
+       ======================================================================== -->
+  <dialog id="dlg-login" closedby="any">
+    <div class="dialog-head">
+      <h2 id="dlg-login-titulo">Ingreso de Cliente</h2>
+      <form method="dialog"><button class="btn btn-outline btn-sm" value="close">Cerrar</button></form>
+    </div>
+    <div class="dialog-body">
+      <form id="form-login">
+        <div class="field">
+          <label for="login-user">Cédula o usuario</label>
+          <input id="login-user" type="text" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="login-pass">Clave de acceso</label>
+          <input id="login-pass" type="password" required autocomplete="current-password">
+        </div>
+        <div class="field hidden" id="field-login-2fa">
+          <label for="login-totp">Código de doble factor (6 dígitos)</label>
+          <input id="login-totp" type="text" inputmode="numeric" pattern="[0-9]{6}" placeholder="000000" autocomplete="one-time-code">
+        </div>
+        <div id="login-msg"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Entrar</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ========================================================================
+       5. DIÁLOGO: SIMULADOR DE PRÉSTAMO (RF-12 · 4 FRECUENCIAS · MODELO 10%)
+       ======================================================================== -->
+  <dialog id="dlg-simulador" closedby="any">
+    <div class="dialog-head">
+      <h2>Simulador de préstamo · Modelo del 10%</h2>
+      <form method="dialog"><button class="btn btn-outline btn-sm" value="close">Cerrar</button></form>
+    </div>
+    <div class="dialog-body">
+      <div class="grid-2">
+        <div class="field">
+          <label for="sim-monto">Monto ($500.000 a $2.000.000)</label>
+          <input id="sim-monto" type="number" min="500000" max="2000000" step="50000" value="1000000">
+        </div>
+        <div class="field">
+          <label for="sim-plazo">Plazo en meses (1 a 24)</label>
+          <input id="sim-plazo" type="number" min="1" max="24" value="12">
+        </div>
+        <div class="field">
+          <label for="sim-frecuencia">Frecuencia de pago</label>
+          <select id="sim-frecuencia">
+            <option value="mensual">Mensual</option>
+            <option value="quincenal">Quincenal</option>
+            <option value="semanal">Semanal</option>
+            <option value="diaria">Diaria</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sim-tasa">Tasa máxima legal mensual (%)</label>
+          <input id="sim-tasa" type="number" step="0.1" min="0.5" max="6.5" value="2.3">
+        </div>
+      </div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px">
+          <input id="sim-referente" type="checkbox" style="width:18px;min-height:18px">
+          <span>El crédito tiene referente (+2% comisión al referente dentro del 10%)</span>
+        </label>
+      </div>
+      <div id="sim-resultado"></div>
+    </div>
+  </dialog>
+
+  <!-- ========================================================================
+       6. DIÁLOGO: DETALLE DE UN REFERIDO DIRECTO (PRD §4 «Mi portafolio»)
+       ======================================================================== -->
+  <dialog id="dlg-referido-detalle" closedby="any">
+    <div class="dialog-head">
+      <h2 id="ref-det-titulo">Estado de cuenta del referido</h2>
+      <form method="dialog"><button class="btn btn-outline btn-sm" value="close">Cerrar</button></form>
+    </div>
+    <div class="dialog-body" id="ref-det-body"></div>
+  </dialog>
+
+  <!-- ========================================================================
+       7. DIÁLOGO: SEGURIDAD DOBLE FACTOR (2FA TOTP)
+       ======================================================================== -->
+  <dialog id="dlg-2fa" closedby="any">
+    <div class="dialog-head">
+      <h2>Seguridad · Doble Factor (2FA)</h2>
+      <form method="dialog"><button class="btn btn-outline btn-sm" value="close">Cerrar</button></form>
+    </div>
+    <div class="dialog-body" id="dlg-2fa-body"></div>
+  </dialog>
+
+  <!-- ========================================================================
+       8. DIÁLOGO: POLÍTICA DE TRATAMIENTO DE DATOS — LEY 1581 DE 2012
+       ======================================================================== -->
+  <dialog id="dlg-privacidad" closedby="any">
+    <div class="dialog-head">
+      <h2>Tratamiento de Datos Personales · Ley 1581 de 2012</h2>
+      <form method="dialog"><button class="btn btn-outline btn-sm" value="close">Cerrar</button></form>
+    </div>
+    <div class="dialog-body">
+      <p><strong>Responsable del tratamiento:</strong> Mario de Jesús González Ahumada (C.C. 85.467.791), operando comercialmente como <strong>Financiera Digitbank</strong> · Correo: financieradigitbank@gmail.com.</p>
+      <p><strong>Encargado tecnológico:</strong> Laboratorio de Inteligencia Artificial Aplicada (LIAA).</p>
+      <p>Los datos personales recolectados se destinan exclusivamente a la evaluación crediticia, administración de préstamos, cálculo de cuotas, custodia del fondo de garantías crediticias, gestión de la red de referidos y envío de notificaciones transaccionales.</p>
+      <p>El titular puede ejercer en cualquier momento sus derechos de conocer, actualizar, rectificar y suprimir sus datos escribiendo a <strong>financieradigitbank@gmail.com</strong>.</p>
+    </div>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
